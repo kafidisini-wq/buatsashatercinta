@@ -13,7 +13,7 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Quicksand', sans-serif;
-            text-transform: lowercase;
+            text-transform: lowercase; 
         }
 
         body {
@@ -84,23 +84,11 @@
             cursor: pointer;
             transition: 0.3s;
             z-index: 10;
+            text-decoration: none; /* Buat tombol link */
+            display: inline-block;
         }
 
         .btn-masuk:hover { background: #fff; color: #000; }
-
-        /* --- interactive sakura --- */
-        .sakura {
-            position: absolute;
-            background: #ffb7c5;
-            border-radius: 100% 0% 100% 0% / 100% 0% 100% 0%;
-            pointer-events: none;
-            animation: fall linear forwards;
-            z-index: 1;
-        }
-
-        @keyframes fall {
-            to { transform: translateY(100vh) rotate(360deg); }
-        }
 
         /* --- kotak surat (envelope) section --- */
         .envelope-wrapper {
@@ -111,7 +99,7 @@
             background: #ff9a9e; 
             border-radius: 5px;
             transition: 0.5s;
-            margin-top: 50px;
+            margin-top: 30px;
         }
 
         .envelope-wrapper::before {
@@ -172,21 +160,21 @@
             z-index: 5;
         }
 
-        /* --- polaroid gallery (9:16) --- */
+        /* --- polaroid gallery --- */
         .polaroid {
             background: white;
-            padding: 15px 15px 40px 15px;
+            padding: 12px 12px 45px 12px;
             box-shadow: 0 10px 20px rgba(0,0,0,0.3);
             transform: rotate(-3deg);
-            width: 250px;
+            width: 240px; 
             transition: 0.5s ease-in-out;
             cursor: pointer;
         }
 
         .polaroid img {
             width: 100%;
-            aspect-ratio: 9/16; 
-            object-fit: cover;
+            height: 340px; 
+            object-fit: cover; 
             animation: kenBurns 10s infinite alternate;
         }
 
@@ -218,13 +206,14 @@
             user-select: none;
         }
 
-        /* --- gift box --- */
+        /* --- gift box spesial --- */
         .gift-container {
             position: relative;
             cursor: pointer;
             width: 150px;
             height: 150px;
             margin-bottom: 20px;
+            z-index: 10;
         }
 
         .box-body {
@@ -233,6 +222,7 @@
             background: #ff4757;
             position: relative;
             border-radius: 5px;
+            z-index: 5;
         }
 
         .box-lid {
@@ -243,8 +233,8 @@
             top: -20px;
             left: -5%;
             border-radius: 5px;
-            transition: 0.5s;
-            z-index: 5;
+            transition: 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 6;
         }
 
         .gift-container:hover .box-lid { transform: translateY(-10px) rotate(5deg); }
@@ -256,6 +246,29 @@
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
+        }
+
+        /* Isi Kado (Hati Raksasa) */
+        .gift-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 80px;
+            opacity: 0;
+            transition: 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 4;
+            pointer-events: none;
+        }
+
+        .gift-container.opened .box-lid {
+            transform: translateY(-150px) rotate(25deg);
+            opacity: 0;
+        }
+
+        .gift-container.opened .gift-content {
+            transform: translate(-50%, -160px) scale(1.5);
+            opacity: 1;
         }
 
         /* --- grand finale effects --- */
@@ -291,11 +304,25 @@
             50% { transform: scale(1.5); opacity: 1; }
             100% { transform: scale(2); opacity: 0; }
         }
+        
+        /* --- interactive sakura --- */
+        .sakura {
+            position: absolute;
+            background: #ffb7c5;
+            border-radius: 100% 0% 100% 0% / 100% 0% 100% 0%;
+            pointer-events: none;
+            animation: fall linear forwards;
+            z-index: 1;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(360deg); }
+        }
     </style>
 </head>
 <body>
 
-    <audio id="music" loop>
+    <audio id="music" loop preload="auto">
         <source src="lagu.mp3" type="audio/mpeg">
     </audio>
 
@@ -313,10 +340,10 @@
         <div id="envelope-trigger" class="envelope-wrapper">
             <div class="letter">
                 <p>hai sayang...</p><br>
-                <p>aku tau kamu lagi kecewa, dan aku ngga mau banyak cari alasan. aku cuma mau minta maaf dari hati yang paling dalam.</p><br>
-                <p>klik di mana aja buat lanjut ❤️</p>
+                <p>aku tau kamu lagi kecewa, dan aku ngga mau banyak cari alasan. aku cuma mau minta maaf dari hati yang paling dalam.</p>
             </div>
         </div>
+        <button class="btn-masuk" id="btn-next-letter" style="display:none; margin-top: 50px; z-index: 10;" onclick="showSection('gallery-section')">selanjutnya ❤️</button>
     </section>
 
     <section id="gallery-section">
@@ -336,17 +363,25 @@
         <p id="game-msg" style="display:none; margin-top:20px; font-size:16px; color:#ffb7c5; padding: 0 15px;">
             "kalau kamu bisa sampai di sini, semoga kita juga bisa melewati masalah ini bersama."
         </p>
-        <button class="btn-masuk" id="btn-next-game" style="display:none; margin-top: 15px;" onclick="showSection('gift-section')">buka sesuatu buat kamu</button>
+        <button class="btn-masuk" id="btn-next-game" style="display:none; margin-top: 15px;" onclick="showSection('gift-section')">buka kado buat kamu 🎁</button>
     </section>
 
     <section id="gift-section">
+        <p id="gift-text" style="font-size: 18px; margin-bottom: 40px; color: #ffb7c5;">ada satu hal lagi buat kamu...</p>
+        
         <div class="gift-container" onclick="openGift()">
             <div class="box-lid"></div>
             <div class="box-body">
                 <div class="box-ribbon"></div>
             </div>
+            <div class="gift-content">❤️</div>
         </div>
-        <button class="btn-masuk" id="btn-maaf" style="display:none;" onclick="triggerGrandFinale()">❤️ maafin aku</button>
+
+        <button class="btn-masuk" id="btn-maaf" style="display:none; margin-top: 40px; z-index: 10;" onclick="triggerGrandFinale()">maafin aku?</button>
+
+        <a href="https://wa.me/6285794728731" class="btn-masuk" id="btn-wa" style="display:none; margin-top: 20px; z-index: 1001; position: relative;">
+            <i class="fa-brands fa-whatsapp"></i> chat aku ya
+        </a>
     </section>
 
     <script>
@@ -379,7 +414,14 @@
 
         // Navigasi Section
         document.getElementById('btn-start').addEventListener('click', () => {
-            document.getElementById('music').play().catch(()=>{});
+            let audio = document.getElementById('music');
+            audio.load(); 
+            let playPromise = audio.play();
+            if (playPromise !== undefined) {
+                playPromise.then(_ => {}).catch(error => {
+                    console.log("Autoplay dicegah browser HP.");
+                });
+            }
             showSection('envelope-section');
             startSakura();
         });
@@ -389,29 +431,17 @@
             document.getElementById(id).classList.add('active');
         }
 
-        // --- BUG FIXED: Logika Amplop ---
+        // Logika Amplop
         let isEnvelopeOpen = false;
         document.getElementById('envelope-trigger').addEventListener('click', function(e) {
-            e.stopPropagation(); // Biar klik ini nggak langsung dihitung sebagai klik buat pindah halaman
-            
             if (!isEnvelopeOpen) {
-                // Klik pertama: buka suratnya
                 this.classList.add('open');
                 isEnvelopeOpen = true;
-                
-                // Kasih waktu 1.5 detik buat suratnya kebuka sempurna dan dibaca
                 setTimeout(() => {
-                    // Setelah jeda, kalau user klik di MANA AJA di layar, bakal pindah halaman
-                    window.addEventListener('click', goToGalleryOnce);
+                    document.getElementById('btn-next-letter').style.display = 'inline-block';
                 }, 1500);
             }
         });
-
-        function goToGalleryOnce() {
-            showSection('gallery-section');
-            window.removeEventListener('click', goToGalleryOnce); // Hapus event biar ga bentrok di halaman berikutnya
-        }
-        // ---------------------------------
 
         // Sakura Jatuh
         function startSakura() {
@@ -427,7 +457,7 @@
             }, 400);
         }
 
-        // --- MINI GAME LOGIC ---
+        // Mini Game Logic
         let score = 0;
         let gameInterval;
         function startMiniGame() {
@@ -452,7 +482,7 @@
 
                 setTimeout(() => { heart.style.top = '110%'; }, 50);
 
-                heart.addEventListener('touchstart', catchHeart);
+                heart.addEventListener('touchstart', catchHeart, {passive: false});
                 heart.addEventListener('click', catchHeart);
 
                 function catchHeart(e) {
@@ -473,20 +503,26 @@
             }, 800);
         }
 
-        // --- GRAND FINALE ---
+        // Kado Spesial
+        let isGiftOpened = false;
         function openGift() {
-            document.querySelector('.box-lid').style.transform = 'translateY(-150px) rotate(20deg)';
-            document.querySelector('.box-lid').style.opacity = '0';
+            if(isGiftOpened) return; 
+            isGiftOpened = true;
+            
+            document.getElementById('gift-text').style.opacity = '0'; 
+            document.querySelector('.gift-container').classList.add('opened'); 
+            
             setTimeout(() => {
                 document.getElementById('btn-maaf').style.display = 'inline-block';
-            }, 1000);
+            }, 1200);
         }
 
+        // --- Grand Finale & Menampilkan Tombol WA ---
         function triggerGrandFinale() {
             document.getElementById('btn-maaf').style.display = 'none';
             document.querySelector('.gift-container').style.display = 'none';
             
-            // Hujan Hati Deras
+            // Hujan Hati
             setInterval(() => {
                 const h = document.createElement('i');
                 h.className = 'fa-solid fa-heart';
@@ -502,7 +538,7 @@
                 setTimeout(() => { h.remove(); }, 3000);
             }, 100);
 
-            // Kembang Api Emojis
+            // Kembang Api
             setInterval(() => {
                 const fw = document.createElement('div');
                 fw.innerHTML = '🎆';
@@ -513,7 +549,7 @@
                 setTimeout(() => { fw.remove(); }, 1500);
             }, 400);
 
-            // Tulisan iloveyoumostt bermunculan
+            // Teks I Love You Most
             let textCount = 0;
             const textInterval = setInterval(() => {
                 if(textCount > 25) {
@@ -533,6 +569,14 @@
                 setTimeout(() => text.remove(), 4000);
                 textCount++;
             }, 300);
+
+            // Munculkan Tombol WA setelah 3 Detik Finale berjalan
+            setTimeout(() => {
+                let waBtn = document.getElementById('btn-wa');
+                waBtn.style.display = 'inline-block';
+                waBtn.style.opacity = '0';
+                waBtn.style.animation = 'fadeIn 2s forwards';
+            }, 3000);
         }
     </script>
 </body>
