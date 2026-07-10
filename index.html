@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>just for you</title>
+    <!-- Font Awesome buat ikon WhatsApp dan Hati -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600&display=swap');
@@ -84,7 +85,7 @@
             cursor: pointer;
             transition: 0.3s;
             z-index: 10;
-            text-decoration: none; /* Buat tombol link */
+            text-decoration: none;
             display: inline-block;
         }
 
@@ -248,7 +249,6 @@
             transform: translateX(-50%);
         }
 
-        /* Isi Kado (Hati Raksasa) */
         .gift-content {
             position: absolute;
             top: 50%;
@@ -269,6 +269,29 @@
         .gift-container.opened .gift-content {
             transform: translate(-50%, -160px) scale(1.5);
             opacity: 1;
+        }
+
+        /* Tombol Pilihan Maaf & Nggak */
+        #action-buttons {
+            display: none;
+            margin-top: 40px;
+            z-index: 10;
+            position: relative;
+            width: 100%;
+            height: 50px;
+        }
+
+        #btn-maaf {
+            background-color: #ff9a9e;
+            border-color: #ff9a9e;
+        }
+
+        #btn-tidak {
+            background-color: transparent;
+            color: #ff9a9e;
+            border-color: #ff9a9e;
+            position: relative;
+            transition: 0.1s; /* Biar larinya cepet */
         }
 
         /* --- grand finale effects --- */
@@ -305,7 +328,6 @@
             100% { transform: scale(2); opacity: 0; }
         }
         
-        /* --- interactive sakura --- */
         .sakura {
             position: absolute;
             background: #ffb7c5;
@@ -323,6 +345,7 @@
 <body>
 
     <audio id="music" loop preload="auto">
+        <!-- pastikan namanya persis lagu.mp3, ga ada spasi atau huruf besar bro -->
         <source src="lagu.mp3" type="audio/mpeg">
     </audio>
 
@@ -377,8 +400,13 @@
             <div class="gift-content">❤️</div>
         </div>
 
-        <button class="btn-masuk" id="btn-maaf" style="display:none; margin-top: 40px; z-index: 10;" onclick="triggerGrandFinale()">maafin aku?</button>
+        <!-- Tombol Maaf & Nggak (Awalnya Sembunyi) -->
+        <div id="action-buttons">
+            <button class="btn-masuk" id="btn-maaf" onclick="triggerGrandFinale()">maafin aku?</button>
+            <button class="btn-masuk" id="btn-tidak">nggak</button>
+        </div>
 
+        <!-- Tombol WhatsApp untuk Penutupan -->
         <a href="https://wa.me/6285794728731" class="btn-masuk" id="btn-wa" style="display:none; margin-top: 20px; z-index: 1001; position: relative;">
             <i class="fa-brands fa-whatsapp"></i> chat aku ya
         </a>
@@ -412,19 +440,25 @@
         }
         window.onload = typeIntro;
 
-        // Navigasi Section
-        document.getElementById('btn-start').addEventListener('click', () => {
-            let audio = document.getElementById('music');
-            audio.load(); 
-            let playPromise = audio.play();
-            if (playPromise !== undefined) {
-                playPromise.then(_ => {}).catch(error => {
-                    console.log("Autoplay dicegah browser HP.");
-                });
+        // --- SISTEM MUSIK BARU (Lebih Agresif) ---
+        let audio = document.getElementById('music');
+        
+        function forcePlayMusic() {
+            if (audio.paused) {
+                audio.play().catch(e => console.log("Menunggu interaksi layar lebih lanjut..."));
             }
+        }
+
+        document.getElementById('btn-start').addEventListener('click', () => {
+            forcePlayMusic();
             showSection('envelope-section');
             startSakura();
         });
+
+        // Paksa musik nyala tiap kali layarnya disentuh dimanapun
+        document.body.addEventListener('click', forcePlayMusic);
+        document.body.addEventListener('touchstart', forcePlayMusic);
+        // ----------------------------------------
 
         function showSection(id) {
             document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
@@ -513,13 +547,41 @@
             document.querySelector('.gift-container').classList.add('opened'); 
             
             setTimeout(() => {
-                document.getElementById('btn-maaf').style.display = 'inline-block';
+                document.getElementById('action-buttons').style.display = 'block';
             }, 1200);
         }
 
+        // --- LOGIKA TOMBOL LARI (TIDAK) ---
+        const btnTidak = document.getElementById('btn-tidak');
+        
+        function lariDulu() {
+            btnTidak.style.position = 'fixed'; // Lepas dari ikatan biar bisa bebas pindah
+            
+            // Hitung sisa layar biar tombolnya nggak keluar frame
+            const maxLeft = window.innerWidth - btnTidak.offsetWidth - 20; 
+            const maxTop = window.innerHeight - btnTidak.offsetHeight - 20;
+            
+            // Posisi acak
+            const acakLeft = Math.floor(Math.random() * maxLeft);
+            const acakTop = Math.floor(Math.random() * maxTop);
+            
+            btnTidak.style.left = acakLeft + 'px';
+            btnTidak.style.top = acakTop + 'px';
+        }
+
+        // Aktif pas di-hover pakai mouse (kalau buka di laptop)
+        btnTidak.addEventListener('mouseover', lariDulu);
+        
+        // Aktif pas disentuh layarnya (kalau buka di HP)
+        btnTidak.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Mencegah hp ngira kita berhasil ngetap
+            lariDulu();
+        });
+        // ----------------------------------
+
         // --- Grand Finale & Menampilkan Tombol WA ---
         function triggerGrandFinale() {
-            document.getElementById('btn-maaf').style.display = 'none';
+            document.getElementById('action-buttons').style.display = 'none';
             document.querySelector('.gift-container').style.display = 'none';
             
             // Hujan Hati
@@ -581,3 +643,4 @@
     </script>
 </body>
 </html>
+
