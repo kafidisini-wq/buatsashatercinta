@@ -13,7 +13,7 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Quicksand', sans-serif;
-            text-transform: lowercase; /* memaksa semua huruf jadi kecil biar tulus */
+            text-transform: lowercase;
         }
 
         body {
@@ -69,8 +69,9 @@
         /* --- opening --- */
         #typing-intro {
             font-size: 20px;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             min-height: 50px;
+            line-height: 1.5;
         }
 
         .btn-masuk {
@@ -82,105 +83,143 @@
             border-radius: 25px;
             cursor: pointer;
             transition: 0.3s;
+            z-index: 10;
         }
 
         .btn-masuk:hover { background: #fff; color: #000; }
 
-        /* --- interactive sakura & particles --- */
+        /* --- interactive sakura --- */
         .sakura {
             position: absolute;
             background: #ffb7c5;
             border-radius: 100% 0% 100% 0% / 100% 0% 100% 0%;
             pointer-events: none;
             animation: fall linear forwards;
-            z-index: 10;
+            z-index: 1;
         }
 
         @keyframes fall {
             to { transform: translateY(100vh) rotate(360deg); }
         }
 
-        /* --- envelope section --- */
+        /* --- UPDATE: kotak surat (envelope) section --- */
         .envelope-wrapper {
             position: relative;
             cursor: pointer;
-            width: 200px;
+            width: 220px;
             height: 150px;
-            background: #ff9a9e;
-            border-radius: 0 0 10px 10px;
+            background: #ff9a9e; /* Warna dasar amplop */
+            border-radius: 5px;
             transition: 0.5s;
+            margin-top: 50px;
         }
 
+        /* Flap atas (tutup amplop) */
         .envelope-wrapper::before {
             content: '';
             position: absolute;
-            top: -100px;
+            top: 0;
             left: 0;
-            border-left: 100px solid transparent;
-            border-right: 100px solid transparent;
-            border-bottom: 100px solid #ff9a9e;
-            transition: 0.5s;
-            z-index: 3;
+            border-left: 110px solid transparent;
+            border-right: 110px solid transparent;
+            border-top: 90px solid #ff7b81; 
+            transition: 0.6s ease-in-out;
+            z-index: 4;
+            transform-origin: top;
         }
 
+        /* Lipatan bawah dan samping */
+        .envelope-wrapper::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            border-left: 110px solid #ffaeb1;
+            border-right: 110px solid #ffaeb1;
+            border-bottom: 90px solid #ff8a8e;
+            z-index: 3;
+            pointer-events: none;
+            border-radius: 0 0 5px 5px;
+        }
+
+        /* Kertas surat */
         .letter {
             position: absolute;
             bottom: 0;
-            left: 10px;
+            left: 20px;
             width: 180px;
             height: 130px;
             background: #fff;
             color: #333;
-            padding: 10px;
-            font-size: 10px;
+            padding: 20px;
+            font-size: 14px;
             border-radius: 5px;
-            transition: 0.8s;
-            z-index: 2;
+            transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 2; /* Sembunyi di dalam amplop */
             overflow: hidden;
+            opacity: 0; /* Teks benar-benar hilang sebelum dibuka */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
+        /* Saat amplop dibuka */
         .open .envelope-wrapper::before {
             transform: rotateX(180deg);
-            z-index: 1;
+            z-index: 1; /* Tutup pindah ke belakang surat */
         }
 
         .open .letter {
-            transform: translateY(-120px);
+            transform: translateY(-130px); /* Surat naik */
             height: 250px;
             width: 300px;
-            left: -50px;
-            font-size: 14px;
-            padding: 20px;
-            z-index: 4;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            left: -40px;
+            opacity: 1; /* Teks muncul */
+            z-index: 5;
         }
 
-        /* --- polaroid gallery --- */
+        /* --- polaroid gallery (9:16) --- */
         .polaroid {
             background: white;
             padding: 15px 15px 40px 15px;
             box-shadow: 0 10px 20px rgba(0,0,0,0.3);
             transform: rotate(-3deg);
-            width: 280px;
+            width: 250px;
             transition: 0.5s ease-in-out;
             cursor: pointer;
         }
 
         .polaroid img {
             width: 100%;
-            height: 250px;
+            aspect-ratio: 9/16; 
             object-fit: cover;
             animation: kenBurns 10s infinite alternate;
         }
 
         @keyframes kenBurns {
             from { transform: scale(1); }
-            to { transform: scale(1.1); }
+            to { transform: scale(1.05); }
         }
 
-        .polaroid:hover {
-            transform: rotate(0deg) scale(1.1);
-            z-index: 100;
+        .polaroid:hover { transform: rotate(0deg) scale(1.05); z-index: 100; }
+
+        /* --- mini game section --- */
+        #game-area {
+            position: relative;
+            width: 90vw;
+            max-width: 400px;
+            height: 50vh;
+            border: 2px dashed #ff9a9e;
+            border-radius: 15px;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        .game-heart {
+            position: absolute;
+            font-size: 35px;
+            color: #ff4757;
+            cursor: pointer;
+            transition: top 3s linear;
+            user-select: none;
         }
 
         /* --- gift box --- */
@@ -189,6 +228,7 @@
             cursor: pointer;
             width: 150px;
             height: 150px;
+            margin-bottom: 20px;
         }
 
         .box-body {
@@ -211,9 +251,7 @@
             z-index: 5;
         }
 
-        .gift-container:hover .box-lid {
-            transform: translateY(-40px) rotate(10deg);
-        }
+        .gift-container:hover .box-lid { transform: translateY(-10px) rotate(5deg); }
 
         .box-ribbon {
             width: 20px;
@@ -224,25 +262,38 @@
             transform: translateX(-50%);
         }
 
-        /* --- click heart effect --- */
-        .click-heart {
+        /* --- grand finale effects --- */
+        .iloveyou-text {
             position: fixed;
-            color: #ff4757;
+            font-size: 28px;
+            font-weight: 600;
+            color: #ffb7c5;
+            opacity: 0;
             pointer-events: none;
-            z-index: 9999;
-            animation: heartOut 1s forwards;
+            z-index: 1000;
+            animation: textFade 4s forwards;
+            text-shadow: 0 0 10px #ff4757;
         }
 
-        @keyframes heartOut {
-            to { transform: translateY(-100px) scale(2); opacity: 0; }
+        @keyframes textFade {
+            0% { opacity: 0; transform: scale(0.5); }
+            20% { opacity: 1; transform: scale(1.2); }
+            80% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(1.5); }
         }
 
-        #final-text {
-            display: none;
-            font-size: 24px;
-            color: #ff6b81;
-            margin-top: 20px;
-            animation: fadeIn 2s;
+        .firework {
+            position: fixed;
+            font-size: 40px;
+            pointer-events: none;
+            z-index: 999;
+            animation: boom 1.5s forwards;
+        }
+
+        @keyframes boom {
+            0% { transform: scale(0); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
         }
     </style>
 </head>
@@ -260,10 +311,13 @@
     </section>
 
     <section id="envelope-section">
+        <p style="margin-bottom: 20px; font-size: 16px; color: #ffb7c5; animation: fadeIn 2s infinite alternate;">
+            ada pesan buat kamu, klik amplopnya ya 💌
+        </p>
         <div id="envelope-trigger" class="envelope-wrapper">
             <div class="letter">
                 <p>hai sayang...</p><br>
-                <p>aku tau kamu lagi marah. aku nggak mau bela diri. aku cuma mau minta maaf kalau sikapku bikin kecewa. perasaan kamu selalu jadi prioritas aku.</p><br>
+                <p>aku tau kamu lagi kecewa, dan aku ngga mau banyak cari alasan. aku cuma mau minta maaf dari hati yang paling dalam.</p><br>
                 <p>klik di mana aja buat lanjut ❤️</p>
             </div>
         </div>
@@ -271,13 +325,22 @@
 
     <section id="gallery-section">
         <div class="polaroid">
-            <!-- Ingat pastikan file fotonya pakai nama foto.jpg ya bro -->
             <img src="foto.jpg" alt="foto favorit">
-            <!-- Ini bagian teks yang di-request -->
             <p style="color: #333; margin-top: 15px; font-weight: 500;">foto kamu akan jadi foto favoritku sampai kapanpun</p>
         </div>
-        <p style="margin-top: 30px;">karena kamu selalu ada, bikin aku belajar jadi lebih baik, dan aku tetap milih kamu setiap hari.</p>
-        <button class="btn-masuk" onclick="showSection('gift-section')">ada sesuatu buat kamu</button>
+        <button class="btn-masuk" onclick="showSection('minigame-section'); startMiniGame();">lanjut ❤️</button>
+    </section>
+
+    <section id="minigame-section">
+        <p style="font-size: 18px;">sebelum lanjut, coba tangkap 5 hati yang jatuh buat aku ya ❤️</p>
+        <p style="margin-top:10px;">hati tertangkap: <span id="score" style="color:#ff6b81; font-weight:bold;">0</span> / 5</p>
+        
+        <div id="game-area"></div>
+        
+        <p id="game-msg" style="display:none; margin-top:20px; font-size:16px; color:#ffb7c5; padding: 0 15px;">
+            "kalau kamu bisa sampai di sini, semoga kita juga bisa melewati masalah ini bersama."
+        </p>
+        <button class="btn-masuk" id="btn-next-game" style="display:none; margin-top: 15px;" onclick="showSection('gift-section')">buka sesuatu buat kamu</button>
     </section>
 
     <section id="gift-section">
@@ -287,42 +350,40 @@
                 <div class="box-ribbon"></div>
             </div>
         </div>
-        <div id="final-text">i love you so much, salshabila ❤️</div>
-        <p id="sub-final" style="display: none; margin-top: 10px;">terima kasih sudah mau buka hati lagi.</p>
+        <button class="btn-masuk" id="btn-maaf" style="display:none;" onclick="triggerGrandFinale()">❤️ maafin aku</button>
     </section>
 
     <script>
-        // --- Setup Bintang ---
+        // Bintang Background
         const starsContainer = document.getElementById('stars-container');
-        for (let i = 0; i < 150; i++) {
+        for (let i = 0; i < 100; i++) {
             const star = document.createElement('div');
             star.className = 'star';
-            const size = Math.random() * 3 + 'px';
-            star.style.width = size;
-            star.style.height = size;
+            star.style.width = Math.random() * 3 + 'px';
+            star.style.height = star.style.width;
             star.style.left = Math.random() * 100 + '%';
             star.style.top = Math.random() * 100 + '%';
             star.style.setProperty('--duration', Math.random() * 3 + 2 + 's');
             starsContainer.appendChild(star);
         }
 
-        // --- Efek Mengetik Opening ---
-        const introText = "website ini cuma dibuat untuk satu orang yang paling berharga buat aku.";
+        // Teks Opening
+        const introText = "mungkin aku bukan yang paling sempurna, tapi perasaanku ke kamu itu nyata. maafin aku ya.";
         let charIndex = 0;
         function typeIntro() {
             if (charIndex < introText.length) {
                 document.getElementById('typing-intro').innerHTML += introText.charAt(charIndex);
                 charIndex++;
-                setTimeout(typeIntro, 70);
+                setTimeout(typeIntro, 60);
             } else {
                 document.getElementById('btn-start').style.display = 'block';
             }
         }
         window.onload = typeIntro;
 
-        // --- Kontrol Musik & Transisi ---
+        // Navigasi Section
         document.getElementById('btn-start').addEventListener('click', () => {
-            document.getElementById('music').play();
+            document.getElementById('music').play().catch(()=>{});
             showSection('envelope-section');
             startSakura();
         });
@@ -332,85 +393,141 @@
             document.getElementById(id).classList.add('active');
         }
 
-        // --- Amplop Logika ---
+        // Logika Amplop (FIXED)
         document.getElementById('envelope-trigger').addEventListener('click', function() {
-            this.parentElement.classList.toggle('open');
+            this.classList.toggle('open');
+            // Kasih jeda waktu biar dia baca suratnya dulu sebelum bisa klik pindah halaman
             setTimeout(() => {
                 window.addEventListener('click', goToGalleryOnce);
-            }, 1000);
+            }, 2000); // 2 detik setelah dibuka baru bisa diklik ke next page
         });
 
-        function goToGalleryOnce() {
+        function goToGalleryOnce(e) {
+            if(e.target.closest('#envelope-trigger')) return; 
             showSection('gallery-section');
             window.removeEventListener('click', goToGalleryOnce);
         }
 
-        // --- Sakura falling ---
+        // Sakura Jatuh
         function startSakura() {
             setInterval(() => {
                 const petal = document.createElement('div');
                 petal.className = 'sakura';
                 petal.style.left = Math.random() * 100 + 'vw';
-                petal.style.width = Math.random() * 10 + 10 + 'px';
-                petal.style.height = Math.random() * 10 + 10 + 'px';
+                petal.style.width = Math.random() * 10 + 8 + 'px';
+                petal.style.height = petal.style.width;
                 petal.style.animationDuration = Math.random() * 3 + 4 + 's';
                 document.body.appendChild(petal);
-                setTimeout(() => petal.remove(), 7000);
-            }, 300);
+                setTimeout(() => petal.remove(), 6000);
+            }, 400);
         }
 
-        // --- Click heart effect ---
-        window.addEventListener('click', (e) => {
-            const heart = document.createElement('i');
-            heart.className = 'fa-solid fa-heart click-heart';
-            heart.style.left = e.clientX + 'px';
-            heart.style.top = e.clientY + 'px';
-            document.body.appendChild(heart);
-            setTimeout(() => heart.remove(), 1000);
-        });
+        // --- MINI GAME LOGIC ---
+        let score = 0;
+        let gameInterval;
+        function startMiniGame() {
+            score = 0;
+            document.getElementById('score').innerText = score;
+            const gameArea = document.getElementById('game-area');
+            gameArea.innerHTML = '';
+            document.getElementById('game-msg').style.display = 'none';
+            document.getElementById('btn-next-game').style.display = 'none';
 
-        // --- Open Gift ---
+            gameInterval = setInterval(() => {
+                if (score >= 5) {
+                    clearInterval(gameInterval);
+                    return;
+                }
+                const heart = document.createElement('i');
+                heart.className = 'fa-solid fa-heart game-heart';
+                heart.style.left = Math.random() * 85 + '%';
+                heart.style.top = '-40px';
+                
+                gameArea.appendChild(heart);
+
+                setTimeout(() => { heart.style.top = '110%'; }, 50);
+
+                heart.addEventListener('touchstart', catchHeart);
+                heart.addEventListener('click', catchHeart);
+
+                function catchHeart(e) {
+                    e.preventDefault(); 
+                    if (score < 5) {
+                        score++;
+                        document.getElementById('score').innerText = score;
+                        heart.remove();
+                        if (score >= 5) {
+                            clearInterval(gameInterval);
+                            document.getElementById('game-msg').style.display = 'block';
+                            document.getElementById('btn-next-game').style.display = 'inline-block';
+                        }
+                    }
+                }
+
+                setTimeout(() => { if (heart.parentElement) heart.remove(); }, 3000);
+            }, 800);
+        }
+
+        // --- GRAND FINALE ---
         function openGift() {
             document.querySelector('.box-lid').style.transform = 'translateY(-150px) rotate(20deg)';
             document.querySelector('.box-lid').style.opacity = '0';
-            document.getElementById('final-text').style.display = 'block';
-            document.getElementById('sub-final').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('btn-maaf').style.display = 'inline-block';
+            }, 1000);
+        }
+
+        function triggerGrandFinale() {
+            document.getElementById('btn-maaf').style.display = 'none';
+            document.querySelector('.gift-container').style.display = 'none';
             
-            // Konfeti sederhana
-            for(let i=0; i<50; i++) {
-                setTimeout(() => {
-                    const conf = document.createElement('div');
-                    conf.style.position = 'fixed';
-                    conf.style.width = '10px';
-                    conf.style.height = '10px';
-                    conf.style.backgroundColor = ['#ff4757','#ff6b81','#ffffff'][Math.floor(Math.random()*3)];
-                    conf.style.left = '50%';
-                    conf.style.top = '50%';
-                    conf.style.zIndex = '100';
-                    conf.style.borderRadius = '50%';
-                    document.body.appendChild(conf);
-                    
-                    const angle = Math.random() * Math.PI * 2;
-                    const velocity = Math.random() * 10 + 5;
-                    const dx = Math.cos(angle) * velocity;
-                    const dy = Math.sin(angle) * velocity;
-                    
-                    let posX = 50;
-                    let posY = 50;
-                    
-                    const move = setInterval(() => {
-                        posX += dx;
-                        posY += dy;
-                        conf.style.left = `calc(50% + ${posX}px)`;
-                        conf.style.top = `calc(50% + ${posY}px)`;
-                        conf.style.opacity -= 0.02;
-                        if(conf.style.opacity <= 0) {
-                            clearInterval(move);
-                            conf.remove();
-                        }
-                    }, 20);
-                }, i * 50);
-            }
+            // Hujan Hati Deras
+            setInterval(() => {
+                const h = document.createElement('i');
+                h.className = 'fa-solid fa-heart';
+                h.style.position = 'fixed';
+                h.style.color = '#ff4757';
+                h.style.fontSize = Math.random() * 20 + 10 + 'px';
+                h.style.left = Math.random() * 100 + 'vw';
+                h.style.top = '-20px';
+                h.style.transition = 'top ' + (Math.random() * 2 + 2) + 's linear';
+                h.style.zIndex = '999';
+                document.body.appendChild(h);
+                setTimeout(() => { h.style.top = '110vh'; }, 50);
+                setTimeout(() => { h.remove(); }, 3000);
+            }, 100);
+
+            // Kembang Api Emojis
+            setInterval(() => {
+                const fw = document.createElement('div');
+                fw.innerHTML = '🎆';
+                fw.className = 'firework';
+                fw.style.left = Math.random() * 80 + 10 + 'vw';
+                fw.style.top = Math.random() * 80 + 10 + 'vh';
+                document.body.appendChild(fw);
+                setTimeout(() => { fw.remove(); }, 1500);
+            }, 400);
+
+            // Tulisan iloveyoumostt bermunculan
+            let textCount = 0;
+            const textInterval = setInterval(() => {
+                if(textCount > 25) {
+                    clearInterval(textInterval);
+                    return;
+                }
+                const text = document.createElement('div');
+                text.innerText = 'iloveyoumostt';
+                text.className = 'iloveyou-text';
+                text.style.left = Math.random() * 60 + 10 + 'vw';
+                text.style.top = Math.random() * 80 + 10 + 'vh';
+                
+                const rotate = (Math.random() * 40) - 20;
+                text.style.transform = `rotate(${rotate}deg)`;
+
+                document.body.appendChild(text);
+                setTimeout(() => text.remove(), 4000);
+                textCount++;
+            }, 300);
         }
     </script>
 </body>
