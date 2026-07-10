@@ -102,19 +102,18 @@
             to { transform: translateY(100vh) rotate(360deg); }
         }
 
-        /* --- UPDATE: kotak surat (envelope) section --- */
+        /* --- kotak surat (envelope) section --- */
         .envelope-wrapper {
             position: relative;
             cursor: pointer;
             width: 220px;
             height: 150px;
-            background: #ff9a9e; /* Warna dasar amplop */
+            background: #ff9a9e; 
             border-radius: 5px;
             transition: 0.5s;
             margin-top: 50px;
         }
 
-        /* Flap atas (tutup amplop) */
         .envelope-wrapper::before {
             content: '';
             position: absolute;
@@ -128,7 +127,6 @@
             transform-origin: top;
         }
 
-        /* Lipatan bawah dan samping */
         .envelope-wrapper::after {
             content: '';
             position: absolute;
@@ -142,7 +140,6 @@
             border-radius: 0 0 5px 5px;
         }
 
-        /* Kertas surat */
         .letter {
             position: absolute;
             bottom: 0;
@@ -155,24 +152,23 @@
             font-size: 14px;
             border-radius: 5px;
             transition: 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 2; /* Sembunyi di dalam amplop */
+            z-index: 2; 
             overflow: hidden;
-            opacity: 0; /* Teks benar-benar hilang sebelum dibuka */
+            opacity: 0; 
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
-        /* Saat amplop dibuka */
         .open .envelope-wrapper::before {
             transform: rotateX(180deg);
-            z-index: 1; /* Tutup pindah ke belakang surat */
+            z-index: 1; 
         }
 
         .open .letter {
-            transform: translateY(-130px); /* Surat naik */
+            transform: translateY(-130px); 
             height: 250px;
             width: 300px;
             left: -40px;
-            opacity: 1; /* Teks muncul */
+            opacity: 1; 
             z-index: 5;
         }
 
@@ -393,20 +389,29 @@
             document.getElementById(id).classList.add('active');
         }
 
-        // Logika Amplop (FIXED)
-        document.getElementById('envelope-trigger').addEventListener('click', function() {
-            this.classList.toggle('open');
-            // Kasih jeda waktu biar dia baca suratnya dulu sebelum bisa klik pindah halaman
-            setTimeout(() => {
-                window.addEventListener('click', goToGalleryOnce);
-            }, 2000); // 2 detik setelah dibuka baru bisa diklik ke next page
+        // --- BUG FIXED: Logika Amplop ---
+        let isEnvelopeOpen = false;
+        document.getElementById('envelope-trigger').addEventListener('click', function(e) {
+            e.stopPropagation(); // Biar klik ini nggak langsung dihitung sebagai klik buat pindah halaman
+            
+            if (!isEnvelopeOpen) {
+                // Klik pertama: buka suratnya
+                this.classList.add('open');
+                isEnvelopeOpen = true;
+                
+                // Kasih waktu 1.5 detik buat suratnya kebuka sempurna dan dibaca
+                setTimeout(() => {
+                    // Setelah jeda, kalau user klik di MANA AJA di layar, bakal pindah halaman
+                    window.addEventListener('click', goToGalleryOnce);
+                }, 1500);
+            }
         });
 
-        function goToGalleryOnce(e) {
-            if(e.target.closest('#envelope-trigger')) return; 
+        function goToGalleryOnce() {
             showSection('gallery-section');
-            window.removeEventListener('click', goToGalleryOnce);
+            window.removeEventListener('click', goToGalleryOnce); // Hapus event biar ga bentrok di halaman berikutnya
         }
+        // ---------------------------------
 
         // Sakura Jatuh
         function startSakura() {
