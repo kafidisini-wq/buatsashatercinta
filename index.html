@@ -1,1 +1,197 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Just for You ❤️</title>
+    <style>
+        /* Menggunakan font elegan, kamu bisa ganti ke Norman/Ebony Light nanti kalau font-nya sudah di-import */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background-color: #fde8e9; /* Warna pastel pink lembut */
+            color: #333;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        .page {
+            display: none;
+            width: 90%;
+            max-width: 400px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1, p { margin-bottom: 20px; font-weight: 300; }
+        
+        button {
+            background-color: #ffb6b9;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: 0.3s;
+            margin: 5px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        button:hover { background-color: #fa9194; }
+
+        /* Halaman 2: Animasi Mengetik */
+        #typing-text { min-height: 100px; }
+
+        /* Halaman 3: Carousel simpel */
+        .carousel img {
+            width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+        }
+
+        /* Halaman 4: Alasan */
+        .reasons { text-align: left; margin: 0 auto; display: inline-block; }
+        .reasons p { margin: 10px 0; }
+
+        /* Efek Hati Jatuh */
+        .heart {
+            position: absolute;
+            top: -10vh;
+            font-size: 24px;
+            animation: fall linear infinite;
+        }
+        
+        @keyframes fall {
+            to { transform: translateY(110vh); }
+        }
+
+        /* Pesan akhir */
+        #final-message { display: none; color: #d63031; font-weight: 600; margin-top: 20px;}
+    </style>
+</head>
+<body>
+
+    <!-- Musik Latar (Otomatis play kalau diizinkan browser, kalau tidak, main saat klik pertama) -->
+    <!-- Ganti 'lagu-kita.mp3' dengan file lagu kalian yang disiapkan di folder -->
+    <audio id="bg-music" loop>
+        <source src="lagu-kita.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Halaman 1: Pembuka -->
+    <div id="page1" class="page active">
+        <p>Website ini cuma dibuat untuk satu orang yang paling berharga buat aku.</p>
+        <button onclick="nextPage('page2'); playMusic();">Klik kalau kamu masih mau dengerin aku</button>
+    </div>
+
+    <!-- Halaman 2: Permintaan Maaf -->
+    <div id="page2" class="page">
+        <p id="typing-text"></p>
+        <button id="btn-next2" style="display:none;" onclick="nextPage('page3')">Lanjut ❤️</button>
+    </div>
+
+    <!-- Halaman 3: Kenangan -->
+    <div id="page3" class="page">
+        <div class="carousel">
+            <!-- Ganti foto.jpg dengan foto kalian berdua yang ada di repo -->
+            <img src="foto.jpg" alt="Kenangan kita">
+            <p>Banyak momen indah yang udah kita lewati sama-sama...</p>
+        </div>
+        <button onclick="nextPage('page4')">Lanjut ❤️</button>
+    </div>
+
+    <!-- Halaman 4: Alasan -->
+    <div id="page4" class="page">
+        <p>Kenapa kamu sangat berarti buat aku?</p>
+        <div class="reasons">
+            <p>❤️ Karena kamu selalu ada.</p>
+            <p>❤️ Karena kamu bikin aku belajar jadi lebih baik.</p>
+            <p>❤️ Karena aku masih memilih kamu setiap hari.</p>
+        </div>
+        <br>
+        <button onclick="nextPage('page5')">Lanjut ❤️</button>
+    </div>
+
+    <!-- Halaman 5: Janji -->
+    <div id="page5" class="page">
+        <p>Aku nggak janji bakal jadi orang yang sempurna. Tapi aku janji bakal terus belajar supaya nggak ngulangin kesalahan yang sama.</p>
+        <button onclick="nextPage('page6'); startHearts();">Terakhir...</button>
+    </div>
+
+    <!-- Halaman 6: Terakhir -->
+    <div id="page6" class="page">
+        <p>Kalau kamu masih marah, nggak apa-apa. Aku akan tetap menghargai perasaanmu. Tapi kalau suatu saat kamu siap, aku berharap kita bisa ngobrol baik-baik lagi. ❤️</p>
+        <button onclick="alert('Peluk virtual terkirim! 🫂❤️')">🤍 Peluk Virtual</button>
+        <button onclick="showFinalMessage()">❤️ Maafin Aku</button>
+        <div id="final-message">Terima kasih sudah mau membuka hati lagi. Aku sayang kamu, Salshabila.</div>
+    </div>
+
+    <script>
+        // Fungsi pindah halaman
+        function nextPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            
+            if(pageId === 'page2') {
+                typeWriter();
+            }
+        }
+
+        // Putar musik
+        function playMusic() {
+            let music = document.getElementById("bg-music");
+            music.play().catch(e => console.log("Autoplay diblokir browser, tidak masalah."));
+        }
+
+        // Animasi Mengetik
+        const textToType = "Aku tahu kamu lagi marah. Aku nggak mau membela diri. Aku cuma mau minta maaf kalau sikapku bikin kamu kecewa. Perasaan kamu penting buat aku.";
+        let i = 0;
+        function typeWriter() {
+            if (i < textToType.length) {
+                document.getElementById("typing-text").innerHTML += textToType.charAt(i);
+                i++;
+                setTimeout(typeWriter, 50);
+            } else {
+                document.getElementById("btn-next2").style.display = "inline-block";
+            }
+        }
+
+        // Efek Hati Berjatuhan
+        function startHearts() {
+            setInterval(() => {
+                const heart = document.createElement("div");
+                heart.innerHTML = "❤️";
+                heart.classList.add("heart");
+                heart.style.left = Math.random() * 100 + "vw";
+                heart.style.animationDuration = Math.random() * 2 + 3 + "s";
+                document.body.appendChild(heart);
+                
+                setTimeout(() => { heart.remove(); }, 5000);
+            }, 300);
+        }
+
+        // Pesan dimaafkan
+        function showFinalMessage() {
+            document.getElementById("final-message").style.display = "block";
+        }
+    </script>
+</body>
+</html>
 
